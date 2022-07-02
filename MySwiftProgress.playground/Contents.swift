@@ -1,4 +1,5 @@
 import Foundation
+import Darwin
 extension Int {
     var lenght: Int {
         return String(self).count
@@ -43,7 +44,7 @@ extension String {
             for i in value {
                 if i > self.count {break}
                 else if i > 0 {
-                   string.remove(at: string.index(string.index(string.startIndex, offsetBy: index-1), offsetBy: 0))
+                    string.remove(at: string.index(string.index(string.startIndex, offsetBy: index-1), offsetBy: 0))
                 }
             }
             self = newValue + string
@@ -68,5 +69,37 @@ extension Bool {
 }
 var a: Int  = 1232
 
-print(a.lenght)
-print(a[0...a.lenght])
+enum dividerErrors : Error {
+    case divideByZero
+}
+
+class Point2d  {
+    var x: Int
+    var y: Int
+    func distanceToCenter() -> Double {
+        return sqrt(Double(x*x+y*y))
+    }
+    init(xValue: Int = 0 , yValue: Int = 0) {
+        self.x = xValue
+        self.y = yValue
+    }
+    deinit {
+        print("Point 2d was deleted:(")
+    }
+}
+class Point3d  : Point2d {
+    var z: Int
+    override func distanceToCenter() -> Double {
+        return sqrt(Double(x*x+y*y+z*z))
+    }
+    
+    init (xValue:Int = 0, yValue: Int = 0, zValue: Int = 0) {
+        self.z = zValue
+        super.init(xValue: xValue, yValue: yValue)
+    }
+    
+}
+
+
+var p3 = Point3d(xValue: 3, yValue: 4, zValue: 0)
+print(p3.distanceToCenter())
