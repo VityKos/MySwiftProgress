@@ -103,12 +103,25 @@ class Point3d  : Point2d {
 }
 
 
-struct TodoItem {
-    
+public struct TodoItem {
+    enum Importance {
+        case unimportant
+        case important
+        case ordinary
+    }
+    var id = UUID().uuidString
+    var text: String
+    var importance: Importance = .ordinary
+    var deadLine: Date? = nil
 }
-
 extension TodoItem {
-    
+    var json : Any  {
+        return 1
+    }
+    static func parse(json: Any) -> TodoItem? {
+        
+        return nil
+    }
 }
 
 class FileCache {
