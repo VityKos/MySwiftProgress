@@ -97,9 +97,7 @@ class Point3d  : Point2d {
         self.z = zValue
         super.init(xValue: xValue, yValue: yValue)
     }
-    
+    deinit {
+        print("Point 3d was deleted ")
+    }
 }
-
-
-var p3 = Point3d(xValue: 3, yValue: 4, zValue: 0)
-print(p3.distanceToCenter())
