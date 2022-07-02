@@ -101,3 +101,17 @@ class Point3d  : Point2d {
         print("Point 3d was deleted ")
     }
 }
+
+
+struct TodoItem {
+    
+}
+
+extension TodoItem {
+    
+}
+
+class FileCache {
+    
+}
+
