@@ -159,7 +159,26 @@ extension TodoItem {
     }
 }
 class FileCache {
-    
+    enum SerializationError: Error {
+        case missing(String)
+        case invalid(String)
+    }
+    private(set) var list: [TodoItem] = []
+    func add(item: TodoItem) {
+        list.append(item)
+    }
+    func remove(byId id: String) throws {
+        var index: Int = -1
+        for i in 0..<list.count {
+            if list[i].id == id {
+                index = i
+            }
+        }
+        if index == -1  {
+            throw SerializationError.invalid("id")
+        }
+        list.remove(at: index)
+    }
 }
 
 var test = TodoItem(text: "Need to bay bread", deadLine: Date(), importance: .important)
@@ -168,4 +187,5 @@ print(test.importance)
 print(test.text)
 if let a = try TodoItem.parse(json: test.json ) {
     print(a.text)
+    print(a.deadLine!)
 }
