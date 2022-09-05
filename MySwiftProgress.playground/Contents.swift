@@ -1,5 +1,6 @@
 import Foundation
 import Darwin
+
 extension Int {
     var lenght: Int {
         return String(self).count
@@ -21,7 +22,6 @@ extension Int {
         }
     }
 }
-
 extension String {
     subscript (_ value : ClosedRange<Int>) -> String {
         get {
@@ -67,7 +67,6 @@ extension Bool {
         self.init(value != 0)
     }
 }
-var a: Int  = 1232
 
 enum dividerErrors : Error {
     case divideByZero
@@ -104,27 +103,69 @@ class Point3d  : Point2d {
 
 
 public struct TodoItem {
-    enum Importance {
-        case unimportant
-        case important
-        case ordinary
+    enum Importance: String {
+        case unimportant = "unimportant"
+        case important = "important"
+        case ordinary = "ordinary"
     }
-    var id = UUID().uuidString
-    var text: String
-    var importance: Importance = .ordinary
-    var deadLine: Date? = nil
-}
-extension TodoItem {
-    var json : Any  {
-        return 1
-    }
-    static func parse(json: Any) -> TodoItem? {
-        
-        return nil
+    let id: String
+    let text: String
+    let importance: Importance
+    let deadLine: Date?
+    
+    init(id: String =  UUID().uuidString, text: String, deadLine: Date? = nil, importance: Importance = .ordinary) {
+        self.id = id
+        self.text = text
+        self.deadLine = deadLine
+        self.importance = importance
     }
 }
 
+extension TodoItem {
+    enum SerializationError: Error {
+        case missing(String)
+        case invalid(String, Any)
+    }
+    //create data json
+    var json : Data {
+        var object_dict: [String: Any] = [
+            "id": self.id,
+            "text": self.text,
+            "importance": self.importance.rawValue,
+        ]
+        if let date = self.deadLine {
+            object_dict["deadLine"] = date.timeIntervalSince1970
+        }
+        do {
+            return try JSONSerialization.data(withJSONObject: object_dict, options: .prettyPrinted)
+        } catch {print(error.localizedDescription)}
+        return Data()
+    }
+    static func parse(json: Data) throws -> TodoItem? {
+        do {
+            let decoded = try JSONSerialization.jsonObject(with: json, options: .topLevelDictionaryAssumed)
+            if let dictFromJson = decoded as? [String: Any] {
+                return TodoItem(
+                    id: dictFromJson["id"] as! String,
+                    text: dictFromJson["text"] as! String,
+                    deadLine: Date(timeIntervalSince1970: dictFromJson["deadLine"] as! TimeInterval),
+                    importance: TodoItem.Importance(rawValue: dictFromJson["importance"] as! String)!
+                )
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        return nil
+    }
+}
 class FileCache {
     
 }
 
+var test = TodoItem(text: "Need to bay bread", deadLine: Date(), importance: .important)
+print(test.id)
+print(test.importance)
+print(test.text)
+if let a = try TodoItem.parse(json: test.json ) {
+    print(a.text)
+}
